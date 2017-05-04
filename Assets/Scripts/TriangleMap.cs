@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.Scripts
@@ -18,7 +16,7 @@ namespace Assets.Scripts
 
 		private void Awake()
 		{
-			Layout = new TriangleMapLayout(Vector2.zero, new TriangleDimensions(1f), MapOrientation.FlatTop);
+			Layout = new TriangleMapLayout(Vector2.zero, new TriangleDimensions(1f), MapOrientation.FlatTop, 1);
 			Corners = new Dictionary<CornerIndex, Corner>();
 			Triangles = new Dictionary<TriangleIndex, Triangle>();
 			var initialAngle = Mathf.Deg2Rad * (Layout.Orientation == MapOrientation.FlatTop ? 30f : 0f);
@@ -31,12 +29,12 @@ namespace Assets.Scripts
 				{
 					for (var i = 0; i < 6; ++i)
 					{
-						var corner = CreateCorner(new[] { q, r });
-						var angle = Constants.TwoPi * (0.5f + Layout.Orientation + i) / 6f;
-						var offset = new Vector2(Mathf.Cos(angle) * triCenter.x, Mathf.Sin(angle) * triCenter.y);
-						var position = new Vector3(hexPosition.x + offset.x, 0, hexPosition.y + offset.y);
-						var tri = Instantiate(_triPrefab, position, Quaternion.Euler(0, (240f - 60f * i) % 360, 0));
-						tri.name = "Tri (" + q + "," + r + ") - " + i +")";
+						//var corner = CreateCorner(new[] { q, r });
+						//var angle = Constants.TwoPi * (0.5f + Layout.Orientation + i) / 6f;
+						//var offset = new Vector2(Mathf.Cos(angle) * triCenter.x, Mathf.Sin(angle) * triCenter.y);
+						//var position = new Vector3(hexPosition.x + offset.x, 0, hexPosition.y + offset.y);
+						//var tri = Instantiate(_triPrefab, position, Quaternion.Euler(0, (240f - 60f * i) % 360, 0));
+						//tri.name = "Tri (" + q + "," + r + ") - " + i +")";
 					}
 				}
 			}
@@ -44,17 +42,17 @@ namespace Assets.Scripts
 
 		private Corner CreateCorner(int[] cornerCoordinates, Vector2 position)
 		{
-			var cornerIndex = new CornerIndex(this, cornerCoordinates);
+			var cornerIndex = new CornerIndex(cornerCoordinates);
 			var corner = new Corner(cornerIndex, Layout);
-			corner.Index.AssignNeighbouringCorners(position, mapRadius);
-			corner.Index.AssignNeighbouringTriangles(position);
+//			corner.Index.AssignNeighbouringCorners(position, mapRadius);
+//			corner.Index.AssignNeighbouringTriangles(position);
 			return corner;
 		}
 
-		private void AddCorner(Corner corner, Vector2 position)
-		{
-			if (Corners.ContainsKey(corner.Index)) return;
-			Corners.Add(corner.Index, corner, position);
-		}
+		//private void AddCorner(Corner corner, Vector2 position)
+		//{
+		//	if (Corners.ContainsKey(corner.Index)) return;
+		//	Corners.Add(corner.Index, corner, position);
+		//}
 	}
 }

@@ -19,34 +19,37 @@ namespace Assets.Scripts
 
 	public class Triangle
 	{
-		public int[] MapIndex;
+		public TriangleIndex Index;
 		public GameObject Object;
-		public Corner[] Corners;
-		public Triangle[] Neighbours;
+		public Corner[] NeighbouringCorners;
+		public Triangle[] NeighbouringTriangles;
 		public Vector2 Position;
-		private readonly TriangleMap _map;
 
-		public Triangle(TriangleMap map, int[] mapIndex, GameObject triangleObject)
+		public Triangle(Corner[] neighbouringCorners)
 		{
-			MapIndex = mapIndex;
-			Object = triangleObject;
-			Neighbours = new Triangle[3];
+			Index = new TriangleIndex(
+				neighbouringCorners[0].Index, 
+				neighbouringCorners[1].Index, 
+				neighbouringCorners[2].Index);
+			NeighbouringTriangles = new Triangle[3];
 			Position = SetPosition();
-			_map = map;
 		}
 
 		public void DebugDrawTriangle()
 		{
-			Debug.DrawLine(Corners[0].Position, Corners[1].Position);
-			Debug.DrawLine(Corners[1].Position, Corners[2].Position);
-			Debug.DrawLine(Corners[2].Position, Corners[0].Position);
+			Debug.DrawLine(NeighbouringCorners[0].Position, NeighbouringCorners[1].Position);
+			Debug.DrawLine(NeighbouringCorners[1].Position, NeighbouringCorners[2].Position);
+			Debug.DrawLine(NeighbouringCorners[2].Position, NeighbouringCorners[0].Position);
 		}
 
-		private Vector2 SetPosition(TriangleMap _map)
+		private Vector2 SetPosition()
 		{
-			var origin = _map.Layout.MapCenter;
-			var mapScale = _map.Layout.
-
+			var position =
+				NeighbouringCorners[0].Position + 
+				NeighbouringCorners[0].Position + 
+				NeighbouringCorners[0].Position; 
+			position /= 3f;
+			return position;
 		}
 	}
 }
