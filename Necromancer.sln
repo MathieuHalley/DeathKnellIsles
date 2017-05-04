@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2015
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Necromancer", "Necromancer.csproj", "{6894A51F-93FF-AA94-4584-68C8AE836B57}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6894A51F-93FF-AA94-4584-68C8AE836B57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6894A51F-93FF-AA94-4584-68C8AE836B57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6894A51F-93FF-AA94-4584-68C8AE836B57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6894A51F-93FF-AA94-4584-68C8AE836B57}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
