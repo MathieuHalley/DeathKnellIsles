@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Assets.Scripts
 {
@@ -10,10 +11,10 @@ namespace Assets.Scripts
 		public Corner[] NeighbouringCorners { get; private set; }
 		public Triangle[] NeighbouringTriangles { get; private set; }
 
-		public static readonly int[][] CornerNeighbourDirections =
+		public static readonly CornerIndex[] CornerNeighbourDirections =
 		{
-			new [] {-1,1,0}, new [] {-1,0,1}, new [] {0,-1,1},
-			new [] {1,-1,0}, new [] {1,0,-1}, new [] {0,1,-1}
+			new CornerIndex(-1,1,0), new CornerIndex(-1,0,1), new CornerIndex(0,-1,1),
+			new CornerIndex(1,-1,0), new CornerIndex(1,0,-1), new CornerIndex(0,1,-1)
 		};
 
 		public Corner(CornerIndex index, TriangleMapLayout layout)
@@ -28,7 +29,6 @@ namespace Assets.Scripts
 			var y = index.S * layout.TriangleDimensions.Height;
 			var position = layout.Orientation == MapOrientation.FlatTop ? new Vector2(x, y) : new Vector2(y, x);
 			position += layout.MapCenter;
-
 
 			return position;
 		}
@@ -47,45 +47,61 @@ namespace Assets.Scripts
 			return new CornerIndex(q, r, s);
 		}
 
-		public void AssignNeighbouringCorners(CornerIndex index, TriangleMapLayout layout)
+		public void AssignNeighbouringCorners(TriangleMapLayout layout)
 		{
-			NeighbouringCorners = new Corner[6];
-			for (var i = 0; i < 6; ++i)
+			var neighbouringCorners = new List<Corner>();
+			foreach (var neighbourDirection in CornerNeighbourDirections)
 			{
-				NeighbouringCorners[i] = new Corner(new CornerIndex( new[] {
-					CornerNeighbourDirections[i][0] * Index.Q,
-					CornerNeighbourDirections[i][1] * Index.R,
-					CornerNeighbourDirections[i][2] * Index.S
-				}), layout);
+				var newIndex = neighbourDirection + Index;
+				var newNeighbour = new Corner(newIndex, layout);
+
+				neighbouringCorners.Add(newNeighbour);
 			}
+			NeighbouringCorners = neighbouringCorners.ToArray();
 		}
 
 		public void AssignNeighbouringTriangles()
 		{
 			NeighbouringTriangles = new[]
 			{
-				new Triangle(new []{this, NeighbouringCorners[0], NeighbouringCorners[1]}),
-				new Triangle(new []{this, NeighbouringCorners[1], NeighbouringCorners[2]}),
-				new Triangle(new []{this, NeighbouringCorners[2], NeighbouringCorners[3]}),
-				new Triangle(new []{this, NeighbouringCorners[3], NeighbouringCorners[4]}),
-				new Triangle(new []{this, NeighbouringCorners[4], NeighbouringCorners[5]}),
-				new Triangle(new []{this, NeighbouringCorners[5], NeighbouringCorners[0]})
+				new Triangle(new [] {this, NeighbouringCorners[0], NeighbouringCorners[1]}),
+				new Triangle(new [] {this, NeighbouringCorners[1], NeighbouringCorners[2]}),
+				new Triangle(new [] {this, NeighbouringCorners[2], NeighbouringCorners[3]}),
+				new Triangle(new [] {this, NeighbouringCorners[3], NeighbouringCorners[4]}),
+				new Triangle(new [] {this, NeighbouringCorners[4], NeighbouringCorners[5]}),
+				new Triangle(new [] {this, NeighbouringCorners[5], NeighbouringCorners[0]})
 			};
 		}
 
-		public static int[][] GetNeighbouringCorners(int[] index, TriangleMapLayout layout)
+		public CornerIndex[] GetNeighbouringCorners(TriangleMapLayout layout)
 		{
-			var neighbouringCorners = new int[6][];
+			var neighbouringCorners = new CornerIndex[6];
 			for (var i = 0; i < 6; ++i)
 			{
-				neighbouringCorners[i] = new[] 
-				{
-					CornerNeighbourDirections[i][0] * index[0],
-					CornerNeighbourDirections[i][1] * index[1],
-					CornerNeighbourDirections[i][2] * index[2]
-				};
+				neighbouringCorners[i] = new CornerIndex(
+					CornerNeighbourDirections[i].Q + Index.Q,
+					CornerNeighbourDirections[i].R + Index.R,
+					CornerNeighbourDirections[i].S + Index.S
+				);
 			}
 			return neighbouringCorners;
+		}
+
+		public override bool Equals(object obj)
+		{
+			if (obj == null || GetType() != obj.GetType()) return false;
+
+			return Index == ((Corner)obj).Index;
+		}
+
+		public override int GetHashCode()
+		{
+			return Index.GetHashCode();
+		}
+
+		public override string ToString()
+		{
+			return "(Q:" + Index.Q + ", R:" + Index.R + ", S:" + Index.S + ")";
 		}
 	}
 }
