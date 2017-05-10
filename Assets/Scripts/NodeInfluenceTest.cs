@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -20,22 +21,21 @@ namespace Assets.Scripts
 			d = new NavigationNode(Vector3.left);
 			e = new NavigationNode(Vector3.right);
 
-			a.AddNeighbour(b);
-			a.AddNeighbour(c);
-			a.AddNeighbour(d);
-			a.AddNeighbour(e);
-			b.AddNeighbour(c);
-			b.AddNeighbour(d);
-			b.AddNeighbour(e);
-			c.AddNeighbour(d);
-			c.AddNeighbour(e);
-			d.AddNeighbour(e);
-
+			NavigationNode.ConnectNeighbours(a, b);
+			NavigationNode.ConnectNeighbours(a, c);
+			NavigationNode.ConnectNeighbours(a, d);
+			NavigationNode.ConnectNeighbours(a, e);
+			NavigationNode.ConnectNeighbours(b, c);
+			NavigationNode.ConnectNeighbours(b, d);
+			NavigationNode.ConnectNeighbours(b, e);
+			NavigationNode.ConnectNeighbours(c, d);
+			NavigationNode.ConnectNeighbours(c, e);
+			NavigationNode.ConnectNeighbours(d, e);
+			
 			a.SetInfluence(Influences.Attacker, 5);
-			Debug.Log("Influences.Attacker: " + a.GetInfluence(Influences.Attacker));
-			a.IncrementInfluence(Influences.Attacker| Influences.Boat, 4);
-			Debug.Log("Influences.Boat: " + a.GetInfluence(Influences.Boat));
-			Debug.Log("Influences.Attacker | Influences.Boat: " + a.GetInfluence(Influences.Attacker));
+			a.IncrementInfluence(Influences.Attacker | Influences.IndimidationBell, 12);
+			a.IncrementInfluence(Influences.Boat | Influences.IndimidationBell, -7);
+			Debug.Log(a.ToString());
 		}
 
 		// Update is called once per frame

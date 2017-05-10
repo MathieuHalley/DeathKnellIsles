@@ -9,32 +9,54 @@ namespace Assets.Scripts
 	[Flags]
 	public enum Influences
 	{
-		None = 1 << 0,				//	0
-		Boat = 1 << 1,				//	1
-		Tower = 1 << 2,				//	2
-		House = 1 << 3,				//	4
-		Attacker = 1 << 4,			//	8
-		Defender = 1 << 5,			//	16
-		Villager = 1 << 6,			//	32
-		HideBell = 1 << 7,			//	64
-		PowerBell = 1 << 8,			//	128
-		RallyBell = 1 << 9,			//	256
-		SleepBell = 1 << 10,		//	512
-		RetreatBell = 1 << 11,		//	1024
-		RaiseBell = 1 << 12,		//	2048
-		IndimidationBell = 1 << 13,	//	4196
+		None = 0,					//	0
+		Boat = 1 << 0,				//	1
+		Tower = 1 << 1,				//	2
+		House = 1 << 2,				//	4
+		Attacker = 1 << 3,			//	8
+		Defender = 1 << 4,			//	16
+		Villager = 1 << 5,			//	32
+		HideBell = 1 << 6,			//	64
+		PowerBell = 1 << 7,			//	128
+		RallyBell = 1 << 8,			//	256
+		SleepBell = 1 << 9,			//	512
+		RetreatBell = 1 << 10,		//	1024
+		RaiseBell = 1 << 11,		//	2048
+		IndimidationBell = 1 << 12,	//	4196
 	}
 
 	public interface INavigationNode
 	{
+		ReadOnlyCollection<INavigationNode> Neighbours { get; }
+		bool IsPassable { get; }
 		Vector3 Position { get; }
-		IList<INavigationNode> Neighbours { get; }
+
 		void AddNeighbour(INavigationNode neighbour);
+		void RemoveNeighbour(INavigationNode neighbour);
+
 		Vector3 GetNeighbourDirection(INavigationNode neighbour);
 		IList<Vector3> GetNeighbourDirections();
+
 		int GetInfluence(Influences influences);
 		void IncrementInfluence(Influences influences, int value);
-		void RemoveNeighbour(INavigationNode neighbour);
 		void SetInfluence(Influences influences, int value);
+		void ResetInfluence(Influences influences);
+
+		void SetPassable(bool passable);
+	}
+
+	public interface IObjectNavigationNode : INavigationNode
+	{
+		ReadOnlyCollection<GameObject> GameObjects { get; }
+
+		void AddObject(GameObject gameObjectPrefab, Transform placement);
+		void AddObject(GameObject gameObjectPrefab, Transform placement, Transform placementVariation);
+		void RemoveObject(GameObject gameObject);
+
+		void ShiftObjectPlacement(GameObject gameObject, Transform placementDelta);
+		void ShiftAllObjectPlacements(Transform placementDelta);
+
+		void UpdateObjectPlacement(GameObject gameObject, Transform newPlacement);
+		void UpdateObjectPlacement(GameObject gameObject, Transform newPlacement, Transform placementVariation);
 	}
 }
