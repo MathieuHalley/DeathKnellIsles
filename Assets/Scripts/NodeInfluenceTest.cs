@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Assets.Scripts
 {
@@ -12,7 +9,7 @@ namespace Assets.Scripts
 		private NavigationNode c;
 		private NavigationNode d;
 		private NavigationNode e;
-		// Use this for initialization
+
 		void Start()
 		{
 			a = new NavigationNode(Vector3.zero);
@@ -38,7 +35,6 @@ namespace Assets.Scripts
 			Debug.Log(a.ToString());
 		}
 
-		// Update is called once per frame
 		void Update()
 		{
 			var nodes = new[] { a, b, c, d, e };

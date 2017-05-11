@@ -28,7 +28,7 @@ namespace Assets.Scripts
 	public interface INavigationNode
 	{
 		ReadOnlyCollection<INavigationNode> Neighbours { get; }
-		bool IsPassable { get; }
+		bool IsPassable { get; set; }
 		Vector3 Position { get; }
 
 		void AddNeighbour(INavigationNode neighbour);
@@ -38,11 +38,10 @@ namespace Assets.Scripts
 		IList<Vector3> GetNeighbourDirections();
 
 		int GetInfluence(Influences influences);
-		void IncrementInfluence(Influences influences, int value);
-		void SetInfluence(Influences influences, int value);
+		void IncrementInfluence(Influences influences, sbyte value);
+		void SetInfluence(Influences influences, byte value);
+		void PropagateInfluence();
 		void ResetInfluence(Influences influences);
-
-		void SetPassable(bool passable);
 	}
 
 	public interface IObjectNavigationNode : INavigationNode

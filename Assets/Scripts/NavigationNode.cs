@@ -9,7 +9,7 @@ namespace Assets.Scripts
 	public class NavigationNode : INavigationNode
 	{
 		private List<INavigationNode> _neighbours = new List<INavigationNode>();
-		private Dictionary<Influences, int> _nodeInfluences = new Dictionary<Influences, int>();
+		private Dictionary<Influences, byte> _nodeInfluences = new Dictionary<Influences, byte>();
 
 		public ReadOnlyCollection<INavigationNode> Neighbours
 		{
@@ -19,7 +19,7 @@ namespace Assets.Scripts
 			}
 		}
 
-		public bool IsPassable { get; private set; }
+		public bool IsPassable { get; set; }
 		public Vector3 Position { get; private set; }
 
 		//
@@ -29,35 +29,36 @@ namespace Assets.Scripts
 			: this(
 				Vector3.zero,
 				new List<INavigationNode>(),
-				new Dictionary<Influences, int>(),
+				new Dictionary<Influences, byte>(),
 				true)
 		{ }
-		public NavigationNode(Vector3 position, bool passable = true) 
+
+		public NavigationNode(Vector3 position, bool isPassable = true) 
 			: this(
 				position, 
 				new List<INavigationNode>(), 
-				new Dictionary<Influences, int>(),
-				passable)
+				new Dictionary<Influences, byte>(),
+				isPassable)
 		{ }
 
-		public NavigationNode(Vector3 position, IList<INavigationNode> neighbours, bool passable = true) 
+		public NavigationNode(Vector3 position, IList<INavigationNode> neighbours, bool isPassable = true) 
 			: this(
 				position, 
 				neighbours,
-				new Dictionary<Influences, int>(),
-				passable)
+				new Dictionary<Influences, byte>(),
+				isPassable)
 		{ }
 
 		public NavigationNode(
 			Vector3 position, 
 			IList<INavigationNode> neighbours, 
-			IDictionary<Influences, int> influences,
-			bool passable = true)
+			IDictionary<Influences, byte> influences,
+			bool isPassable = true)
 		{
 			Position = position;
 			_neighbours = (List<INavigationNode>)neighbours;
-			_nodeInfluences = (Dictionary<Influences, int>)influences;
-			SetPassable(passable);
+			_nodeInfluences = (Dictionary<Influences, byte>)influences;
+			IsPassable = IsPassable;
 		}
 
 		//
@@ -149,7 +150,7 @@ namespace Assets.Scripts
 			return totalInfluence;
 		}
 
-		public void IncrementInfluence(Influences influences, int value)
+		public void IncrementInfluence(Influences influences, sbyte value)
 		{
 			foreach (Influences key in (Influences[])Enum.GetValues(typeof(Influences)))
 			{
@@ -159,11 +160,15 @@ namespace Assets.Scripts
 				}
 
 				var containsKey = _nodeInfluences.ContainsKey(key);
-				var newValue = containsKey ? _nodeInfluences[key] + value : value;
+
+				var newValue = (byte)Mathf.Clamp(
+					containsKey ? _nodeInfluences[key] : (byte)value,
+					byte.MinValue,
+					byte.MaxValue);
 
 				if (!containsKey && newValue > 0)
 				{
-					_nodeInfluences.Add(key, value);
+					_nodeInfluences.Add(key, newValue);
 				}
 				else if (containsKey && newValue <= 0)
 				{
@@ -176,7 +181,25 @@ namespace Assets.Scripts
 			}
 		}
 
-		public void SetInfluence(Influences influences, int value)
+		public void PropagateInfluence()
+		{
+			foreach (Influences key in (Influences[])Enum.GetValues(typeof(Influences)))
+			{
+				if (key == Influences.None || !_nodeInfluences.ContainsKey(key))
+				{
+					continue;
+				}
+				foreach (var neighbour in _neighbours)
+				{
+					if (neighbour.GetInfluence(key) > _nodeInfluences[key] - 1)
+					{
+
+					}
+				}
+			}
+		}
+
+		public void SetInfluence(Influences influences, byte value)
 		{
 			foreach (Influences key in (Influences[])Enum.GetValues(typeof(Influences)))
 			{
@@ -218,11 +241,6 @@ namespace Assets.Scripts
 			}
 		}
 
-		public void SetPassable(bool isPassable)
-		{
-			IsPassable = isPassable;
-		}
-
 		//
 		//	Object Overrides
 		//
@@ -260,6 +278,7 @@ namespace Assets.Scripts
 			{
 				return false;
 			}
+
 			return GetHashCode() == ((NavigationNode)obj).GetHashCode();
 		}
 	}

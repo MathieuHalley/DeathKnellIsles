@@ -58,9 +58,13 @@ namespace Assets.Scripts
 			get
 			{
 				if (Time.timeSinceLevelLoad < Time.deltaTime)
+				{
 					return _scaledTimeSinceStartup = Time.realtimeSinceStartup * timeScale;
+				}
 				else
+				{
 					return _scaledTimeSinceStartup += deltaTime;
+				}
 			}
 		}
 	
@@ -69,9 +73,13 @@ namespace Assets.Scripts
 			get
 			{
 				if (Time.timeSinceLevelLoad < Time.deltaTime)
+				{
 					return _scaledTimeSinceSceneLoad = Time.timeSinceLevelLoad * timeScale;
+				}
 				else
+				{
 					return _scaledTimeSinceSceneLoad += deltaTime;
+				}
 			}
 		}
 	}

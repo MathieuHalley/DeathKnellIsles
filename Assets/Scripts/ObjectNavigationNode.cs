@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using UnityEngine;
 
@@ -26,7 +25,10 @@ namespace Assets.Scripts
 			AddObject(prefab, position, rotation, scale);
 		}
 
-		public void AddObject(GameObject prefab, Transform localPlacement, Transform placementVariation)
+		public void AddObject(
+			GameObject prefab, 
+			Transform localPlacement, 
+			Transform placementVariation)
 		{
 			var position = Position + localPlacement.position 
 				+ new Vector3(
@@ -51,8 +53,8 @@ namespace Assets.Scripts
 			var newObject = UnityEngine.Object.Instantiate(prefab, position, rotation);
 			newObject.transform.localScale = scale;
 			_gameObjects.Add(newObject);
-
 		}
+
 		public void RemoveObject(GameObject gameObject)
 		{
 			_gameObjects.Remove(gameObject);
@@ -86,7 +88,10 @@ namespace Assets.Scripts
 			UpdateObjectPlacement(gameObject, position, rotation, scale);
 		}
 
-		public void UpdateObjectPlacement(GameObject gameObject, Transform newLocalPlacement, Transform placementVariation)
+		public void UpdateObjectPlacement(
+			GameObject gameObject, 
+			Transform newLocalPlacement, 
+			Transform placementVariation)
 		{
 			var position = Position + newLocalPlacement.position
 				+ new Vector3(
@@ -106,7 +111,11 @@ namespace Assets.Scripts
 			UpdateObjectPlacement(gameObject, position, rotation, scale);
 		}
 
-		private void UpdateObjectPlacement(GameObject gameObject, Vector3 position, Quaternion rotation, Vector3 scale)
+		private void UpdateObjectPlacement(
+			GameObject gameObject, 
+			Vector3 position, 
+			Quaternion rotation, 
+			Vector3 scale)
 		{
 			gameObject.transform.position = position;
 			gameObject.transform.rotation = rotation;
