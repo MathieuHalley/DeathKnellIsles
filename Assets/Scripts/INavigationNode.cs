@@ -37,11 +37,14 @@ namespace Assets.Scripts
 		Vector3 GetNeighbourDirection(INavigationNode neighbour);
 		IList<Vector3> GetNeighbourDirections();
 
-		int GetInfluence(Influences influences);
+		byte GetInfluence(Influences influences);
 		void IncrementInfluence(Influences influences, sbyte value);
 		void SetInfluence(Influences influences, byte value);
-		void PropagateInfluence();
 		void ResetInfluence(Influences influences);
+		void PropagateInfluences();
+		void PropagateInfluences(Influences influences, INavigationNode origin);
+		string InfluencesToString();
+		string NeighboursToString();
 	}
 
 	public interface IObjectNavigationNode : INavigationNode

@@ -136,5 +136,20 @@ namespace Assets.Scripts
 
 			return a.x * b.y - a.y * b.x < 0;
 		}
+
+		public static byte ClampToByte(int value)
+		{
+			return (byte)Mathf.Clamp(value, byte.MinValue, byte.MaxValue);
+		}
+
+		public static byte CeilToByte(float value)
+		{
+			return (byte)Mathf.CeilToInt(value);
+		}
+
+		public static byte RoundToByte(float value)
+		{
+			return (byte)Mathf.RoundToInt(value);
+		}
 	}
 }

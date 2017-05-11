@@ -9,7 +9,7 @@ namespace Assets.Scripts
 	public class NavigationNode : INavigationNode
 	{
 		private List<INavigationNode> _neighbours = new List<INavigationNode>();
-		private Dictionary<Influences, byte> _nodeInfluences = new Dictionary<Influences, byte>();
+		private Dictionary<Influences, byte> _influences = new Dictionary<Influences, byte>();
 
 		public ReadOnlyCollection<INavigationNode> Neighbours
 		{
@@ -25,39 +25,19 @@ namespace Assets.Scripts
 		//
 		//	Constructors
 		//
-		public NavigationNode()
-			: this(
-				Vector3.zero,
-				new List<INavigationNode>(),
-				new Dictionary<Influences, byte>(),
-				true)
-		{ }
-
 		public NavigationNode(Vector3 position, bool isPassable = true) 
-			: this(
-				position, 
-				new List<INavigationNode>(), 
-				new Dictionary<Influences, byte>(),
-				isPassable)
+			: this(position, new List<INavigationNode>(), new Dictionary<Influences, byte>(), isPassable)
 		{ }
 
 		public NavigationNode(Vector3 position, IList<INavigationNode> neighbours, bool isPassable = true) 
-			: this(
-				position, 
-				neighbours,
-				new Dictionary<Influences, byte>(),
-				isPassable)
+			: this(position, neighbours, new Dictionary<Influences, byte>(), isPassable)
 		{ }
 
-		public NavigationNode(
-			Vector3 position, 
-			IList<INavigationNode> neighbours, 
-			IDictionary<Influences, byte> influences,
-			bool isPassable = true)
+		public NavigationNode(Vector3 position, IList<INavigationNode> neighbours, IDictionary<Influences, byte> influences, bool isPassable = true)
 		{
 			Position = position;
 			_neighbours = (List<INavigationNode>)neighbours;
-			_nodeInfluences = (Dictionary<Influences, byte>)influences;
+			_influences = (Dictionary<Influences, byte>)influences;
 			IsPassable = IsPassable;
 		}
 
@@ -71,6 +51,7 @@ namespace Assets.Scripts
 			{
 				_neighbours.Add(neighbour);
 			}
+
 			Extension.PolarSort(_neighbours.Select(x => x.Position).ToArray(), Vector3.up, RotationDirection.Clockwise);
 		}
 
@@ -134,19 +115,21 @@ namespace Assets.Scripts
 		//
 		//	Node influence effector functions Get/Set & variations
 		//
-		public int GetInfluence(Influences influences)
+		public byte GetInfluence(Influences influences)
 		{
-			var totalInfluence = 0;
+			var totalInfluence = (byte)0;
+
 			//	Combine the influence values of any existing influences
 			foreach (Influences key in (Influences[])Enum.GetValues(typeof(Influences)))
 			{
-				if (key == Influences.None || !_nodeInfluences.ContainsKey(key) || (influences & key) != key)
+				if (key == Influences.None || !_influences.ContainsKey(key) || (influences & key) != key)
 				{
 					continue;
 				}
 
-				totalInfluence += _nodeInfluences[key];
+				totalInfluence += _influences[key];
 			}
+
 			return totalInfluence;
 		}
 
@@ -159,41 +142,68 @@ namespace Assets.Scripts
 					continue;
 				}
 
-				var containsKey = _nodeInfluences.ContainsKey(key);
+				var containsKey = _influences.ContainsKey(key);
+				var baseValue = containsKey ? _influences[key] : (byte)0;
+				var newValue = Extension.ClampToByte(baseValue + value);
 
-				var newValue = (byte)Mathf.Clamp(
-					containsKey ? _nodeInfluences[key] : (byte)value,
-					byte.MinValue,
-					byte.MaxValue);
-
-				if (!containsKey && newValue > 0)
+				if (!containsKey)
 				{
-					_nodeInfluences.Add(key, newValue);
+					_influences.Add(key, newValue);
 				}
-				else if (containsKey && newValue <= 0)
+				else if (containsKey)
 				{
-					_nodeInfluences.Remove(key);
-				}
-				else if (containsKey && newValue > 0)
-				{
-					_nodeInfluences[key] = newValue;
+					_influences[key] = newValue;
 				}
 			}
 		}
 
-		public void PropagateInfluence()
+		public void PropagateInfluences()
+		{
+			PropagateInfluences(~Influences.None, this);
+		}
+
+		public void PropagateInfluences(Influences influences, INavigationNode origin)
 		{
 			foreach (Influences key in (Influences[])Enum.GetValues(typeof(Influences)))
 			{
-				if (key == Influences.None || !_nodeInfluences.ContainsKey(key))
+				if (key == Influences.None || (influences & key) != key)
 				{
 					continue;
 				}
-				foreach (var neighbour in _neighbours)
-				{
-					if (neighbour.GetInfluence(key) > _nodeInfluences[key] - 1)
-					{
 
+				var unvisitedNodes = new Queue<INavigationNode>();
+
+				unvisitedNodes.Enqueue(origin);
+
+				while (unvisitedNodes.Count > 0)
+				{
+					var currentNode = unvisitedNodes.Dequeue();
+					var currentNodeInfluence = currentNode.GetInfluence(key);
+					if (currentNode != origin && currentNodeInfluence == 0)
+					{
+						currentNodeInfluence = byte.MaxValue;
+					}
+
+					foreach (var neighbour in currentNode.Neighbours)
+					{
+						var neighbourCost = Extension.CeilToByte((neighbour.Position - currentNode.Position).sqrMagnitude);
+						var maxNeighbourInfluence = Extension.ClampToByte(neighbourCost + currentNodeInfluence);
+						var neighbourInfluence = neighbour.GetInfluence(key);
+
+						if (neighbour != origin && neighbourInfluence == 0)
+						{
+							neighbourInfluence = byte.MaxValue;
+						}
+
+						if (neighbourInfluence > maxNeighbourInfluence)
+						{
+							if (!unvisitedNodes.Contains(neighbour))
+							{
+								unvisitedNodes.Enqueue(neighbour);
+							}
+
+							neighbour.SetInfluence(key, maxNeighbourInfluence);
+						}
 					}
 				}
 			}
@@ -208,19 +218,15 @@ namespace Assets.Scripts
 					continue;
 				}
 
-				var containsKey = _nodeInfluences.ContainsKey(key);
+				var containsKey = _influences.ContainsKey(key);
 
-				if (!containsKey && value > 0)
+				if (!containsKey)
 				{
-					_nodeInfluences.Add(key, value);
+					_influences.Add(key, value);
 				}
-				else if (containsKey && value <= 0)
+				else if (containsKey)
 				{
-					_nodeInfluences.Remove(key);
-				}
-				else if (containsKey && value > 0)
-				{
-					_nodeInfluences[key] = value;
+					_influences[key] = value;
 				}
 			}
 		}
@@ -234,9 +240,9 @@ namespace Assets.Scripts
 					continue;
 				}
 
-				if (_nodeInfluences.ContainsKey(key))
+				if (_influences.ContainsKey(key))
 				{
-					_nodeInfluences.Remove(key);
+					_influences.Remove(key);
 				}
 			}
 		}
@@ -244,31 +250,47 @@ namespace Assets.Scripts
 		//
 		//	Object Overrides
 		//
-		public override string ToString()
+		public string InfluencesToString()
 		{
-			var s = "";
-			s += "Influences: \n";
-			foreach (var influence in _nodeInfluences)
+			var s = "Influences: \n";
+
+			foreach (var key in (Influences[])Enum.GetValues(typeof(Influences)))
 			{
-				s += "\t" + Enum.GetName(typeof(Influences), influence.Key) + " - " + influence.Value + "\n";
+				s += "\t" + Enum.GetName(typeof(Influences), key) + " - " +
+					(_influences.ContainsKey(key) ? _influences[key].ToString() : byte.MaxValue.ToString()) 
+					+ "\n";
 			}
 
-			s += "Neighbours: \n";
-			foreach(var neighbour in _neighbours)
+			return s;
+		}
+
+		public string NeighboursToString()
+		{
+			var s = "Neighbours: \n";
+
+			foreach (var neighbour in _neighbours)
 			{
 				s += "\t" + neighbour.Position + "\n";
 			}
+
 			return s;
+		}
+
+		public override string ToString()
+		{
+			return InfluencesToString() + "\n" + NeighboursToString();
 		}
 
 		public override int GetHashCode()
 		{
 			var hash = 17;
+
 			hash = hash * 23 + base.GetHashCode();
 			hash = hash * 23 + _neighbours.GetHashCode();
-			hash = hash * 23 + _nodeInfluences.GetHashCode();
+			hash = hash * 23 + _influences.GetHashCode();
 			hash = hash * 23 + IsPassable.GetHashCode();
 			hash = hash * 23 + Position.GetHashCode();
+
 			return hash;
 		}
 

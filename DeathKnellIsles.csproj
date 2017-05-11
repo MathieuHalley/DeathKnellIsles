@@ -80,6 +80,7 @@
     <Compile Include="Assets\Scripts\EnumExtension.cs" />
     <Compile Include="Assets\Scripts\ExtendedMonoBehaviour.cs" />
     <Compile Include="Assets\Scripts\Extension.cs" />
+    <Compile Include="Assets\Scripts\INavigationMap.cs" />
     <Compile Include="Assets\Scripts\INavigationNode.cs" />
     <Compile Include="Assets\Scripts\NavigationNode.cs" />
     <Compile Include="Assets\Scripts\NodeInfluenceTest.cs" />
