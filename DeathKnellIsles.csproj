@@ -80,11 +80,13 @@
     <Compile Include="Assets\Scripts\EnumExtension.cs" />
     <Compile Include="Assets\Scripts\ExtendedMonoBehaviour.cs" />
     <Compile Include="Assets\Scripts\Extension.cs" />
-    <Compile Include="Assets\Scripts\INavigationMap.cs" />
-    <Compile Include="Assets\Scripts\INavigationNode.cs" />
+    <Compile Include="Assets\Scripts\Interfaces\IInfluenceController.cs" />
+    <Compile Include="Assets\Scripts\Interfaces\INavigationNode.cs" />
+    <Compile Include="Assets\Scripts\Interfaces\IObjectCollection.cs" />
     <Compile Include="Assets\Scripts\NavigationNode.cs" />
+    <Compile Include="Assets\Scripts\NodeInfluenceController.cs" />
     <Compile Include="Assets\Scripts\NodeInfluenceTest.cs" />
-    <Compile Include="Assets\Scripts\ObjectNavigationNode.cs" />
+    <Compile Include="Assets\Scripts\ObjectCollection.cs" />
     <Compile Include="Assets\Scripts\ScaledTime.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
