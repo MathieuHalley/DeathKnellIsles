@@ -6,29 +6,21 @@ namespace Assets.Scripts
 {
     public class FlockBoid : IFlockBoid
     {
-        public FlockBoid(FlockInfluenceValues influenceRanges, FlockInfluenceValues influenceWeights, float maxSpeed, Vector3 position)
+        internal FlockBoid()
         {
-            Influences = new FlockInfluences();
-            InfluenceRanges = influenceRanges;
-            InfluenceWeights = influenceWeights;
+        }
+
+        public FlockBoid(FlockInfluences influences, float maxSpeed, Vector3 position)
+        {
+            Influences = influences;
             MaxSpeed = maxSpeed;
-            Neighbours = new HashSet<IFlockBoid>();
             Position = position;
         }
 
-        public Vector3 Direction
-        {
-            get
-            {
-                return Velocity.normalized;
-            }
-        }
-
+        public Vector3 Direction => Velocity.normalized;
         public FlockInfluences Influences { get; internal set; }
-        public FlockInfluenceValues InfluenceRanges { get; internal set; }
-        public FlockInfluenceValues InfluenceWeights { get; internal set; }
-        public float MaxSpeed { get; internal set; }
-        public HashSet<IFlockBoid> Neighbours { get; set; }
+        public float MaxSpeed { get; }
+        public HashSet<IFlockBoid> Neighbours { get; set; } = new HashSet<IFlockBoid>();
         public Vector3 Position { get; internal set; }
         public Vector3 Velocity { get; internal set; }
 
@@ -41,20 +33,22 @@ namespace Assets.Scripts
             }
         }
 
-        public IEnumerable<IFlockBoid> UpdateNeighbourList(IEnumerable<IFlockBoid> neighbours = default(IEnumerable<IFlockBoid>))
+        public IEnumerable<IFlockBoid> UpdateNeighbourList(IEnumerable<IFlockBoid> neighbours = null)
         {
-            if (neighbours != default(HashSet<IFlockBoid>) || neighbours != default(IEnumerable<IFlockBoid>))
+            if (neighbours != null)
             {
                 Neighbours.UnionWith(neighbours);
             }
 
-            Neighbours.RemoveWhere(n => (n.Position - Position).magnitude < InfluenceRanges.Max);
+            var maxInfluenceRange = Mathf.Max(Influences.Alignment.Range, Influences.Cohesion.Range, Influences.Separation.Range);
+
+            Neighbours.RemoveWhere(n => (n.Position - Position).magnitude > maxInfluenceRange);
 
             return Neighbours;
         }
 
         /// <summary>Calculate the average velocity of the provided IFlockBoids relative to the velocity of this Boid.</summary>
-        /// <returns>A Vector3 that contains the average relative velocity of the provided IFlockingBoids.</returns>
+        /// <returns>A Vector3 that contains the average relative velocity of the provided IFlockBoids.</returns>
         internal Vector3 CalculateFlockAlignment(IEnumerable<IFlockBoid> neighbours)
         {
             var alignment = new Vector3();
@@ -69,10 +63,8 @@ namespace Assets.Scripts
             return Vector3.ClampMagnitude(alignment - Velocity, MaxSpeed);
         }
 
-        /// <summary>
-        ///     Calculate the average position of the provided IFlockingBoids relative to this Boid.
-        /// </summary>
-        /// <returns>The average position of the provided IFlockingBoids relative to this Boid.</returns>
+        /// <summary>Calculate the average position of neighbours relative to this Boid.</summary>
+        /// <returns>The average relative position of neighbours.</returns>
         internal Vector3 CalculateFlockCohesion(IEnumerable<IFlockBoid> neighbours)
         {
             var cohesion = new Vector3();
@@ -87,28 +79,24 @@ namespace Assets.Scripts
 
         internal void CalculateInfluences()
         {
-            var neighbours = IdentifyNeighbours(Neighbours, InfluenceRanges.Alignment);
+            var neighbours = IdentifyNeighbours(Neighbours, Influences.Alignment.Range);
+            var alignment = new FlockInfluence(CalculateFlockAlignment(neighbours), Influences.Alignment.Range, Influences.Alignment.Weight);
+            var cohesion = new FlockInfluence(CalculateFlockCohesion(neighbours), Influences.Cohesion.Range, Influences.Cohesion.Weight);
+            var separation = new FlockInfluence(CalculateFlockSeparation(neighbours), Influences.Separation.Range, Influences.Separation.Weight);
 
-            Influences = new FlockInfluences(CalculateFlockAlignment(neighbours), CalculateFlockCohesion(neighbours), CalculateFlockSeparation(neighbours));
+            Influences = new FlockInfluences(alignment, cohesion, separation);
         }
 
         internal void CalculateMovementVelocity()
         {
-            var velocity = Influences.Alignment * InfluenceWeights.Alignment
-                         + Influences.Cohesion * InfluenceWeights.Cohesion
-                         + Influences.Separation * InfluenceWeights.Separation;
+            var velocity = Influences.Alignment.WeightedInfluence + Influences.Cohesion.WeightedInfluence + Influences.Separation.WeightedInfluence;
 
             Velocity = Vector3.ClampMagnitude(velocity, MaxSpeed);
         }
 
-        /// <summary>
-        ///     Calculate the average position of the provided IFlockingBoids relative to this Boid.
-        /// </summary>
-        /// <returns> The average relative position of the provided neighbours.</returns>
-        /// <remarks>
-        ///     The average position is scaled to give closer neighbours a greater impact on the magnitude of the return value.
-        ///     The magnitude of the return value is inversely scaled by the distance of each neighbour
-        /// </remarks>
+        /// <summary>Calculate the average position of neighbours relative to this Boid.</summary>
+        /// <returns>The average relative position of neighbours.</returns>
+        /// <remarks>The magnitude of the return value is inversely scaled by the distance of each neighbour to give closer neighbours a greater impact on the magnitude of the return value.</remarks>
         internal Vector3 CalculateFlockSeparation(IEnumerable<IFlockBoid> neighbours)
         {
             var separation = new Vector3();
@@ -120,16 +108,13 @@ namespace Assets.Scripts
             }
 
             separation /= neighbours.Count();
-            separation = separation.normalized * MaxSpeed;
-            separation -= Velocity;
+            separation = (separation.normalized * MaxSpeed) - Velocity;
             separation = Vector3.ClampMagnitude(separation, MaxSpeed);
 
             return separation;
         }
 
-        internal IEnumerable<IFlockBoid> IdentifyNeighbours(
-            IEnumerable<IFlockBoid> neighbourCandidates,
-            float radius)
+        internal IEnumerable<IFlockBoid> IdentifyNeighbours(IEnumerable<IFlockBoid> neighbourCandidates, float radius)
         {
             return from candidate in neighbourCandidates
                    where candidate != this

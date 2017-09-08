@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace Assets.Scripts
@@ -7,6 +6,7 @@ namespace Assets.Scripts
     public interface IFlockCollection
     {
         HashSet<HashSet<IFlockBoid>> Flocks { get; }
+        HashSet<IFlockBoid> Boids { get; }
 
         IFlockCollection AddBoid(HashSet<IFlockBoid> flock, IFlockBoid boid);
 
@@ -31,17 +31,11 @@ namespace Assets.Scripts
 
     public class FlockCollection : IFlockCollection
     {
-        public HashSet<HashSet<IFlockBoid>> Flocks { get; internal set; }
+        public HashSet<HashSet<IFlockBoid>> Flocks { get; } = new HashSet<HashSet<IFlockBoid>>();
 
-        public HashSet<IFlockBoid> FlockedBoids
-        {
-            get
-            {
-                return Flocks.SelectMany(flock => flock)
-                             .DistinctBy(boid => new { boid.Position, boid.Velocity })
-                             .ToHashSet();
-            }
-        }
+        public HashSet<IFlockBoid> Boids => Flocks.SelectMany(flock => flock)
+                                                  .DistinctBy(boid => new { boid.Position, boid.Velocity })
+                                                  .ToHashSet();
 
         public IFlockCollection AddBoid(HashSet<IFlockBoid> flock, IFlockBoid boid)
         {

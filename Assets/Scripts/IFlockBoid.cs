@@ -7,8 +7,6 @@ namespace Assets.Scripts
     {
         Vector3 Direction { get; }
         FlockInfluences Influences { get; }
-        FlockInfluenceValues InfluenceRanges { get; }
-        FlockInfluenceValues InfluenceWeights { get; }
         float MaxSpeed { get; }
         HashSet<IFlockBoid> Neighbours { get; set; }
         Vector3 Position { get; }
@@ -19,55 +17,32 @@ namespace Assets.Scripts
         IEnumerable<IFlockBoid> UpdateNeighbourList(IEnumerable<IFlockBoid> neighbours = default(IEnumerable<IFlockBoid>));
     }
 
-    public struct FlockInfluences
+    public struct FlockInfluence
     {
-        public readonly Vector3 Alignment;
-        public readonly Vector3 Cohesion;
-        public readonly Vector3 Separation;
-
-        public FlockInfluences(Vector3 alignment, Vector3 cohesion, Vector3 separation)
+        public FlockInfluence(Vector3 influence, float range, float weight = 1f)
         {
-            Alignment = alignment;
-            Cohesion = cohesion;
-            Separation = separation;
+            Influence = influence;
+            Range = range;
+            Weight = weight;
         }
+
+        public Vector3 Influence { get; }
+        public float Range { get; }
+        public float Weight { get; }
+        public Vector3 WeightedInfluence => Influence * Weight;
     }
 
-    public struct FlockInfluenceValues
+    public struct FlockInfluences
     {
-        public readonly float Alignment;
-        public readonly float Cohesion;
-        public readonly float Separation;
-
-        public FlockInfluenceValues(float alignment, float cohesion, float separation)
+        public FlockInfluences(FlockInfluence alignment, FlockInfluence cohesion, FlockInfluence separation)
         {
             Alignment = alignment;
             Cohesion = cohesion;
             Separation = separation;
         }
 
-        public float Max
-        {
-            get
-            {
-                return Mathf.Max(Alignment, Cohesion, Separation);
-            }
-        }
-
-        public float Mean
-        {
-            get
-            {
-                return (Alignment + Cohesion + Separation) / 3;
-            }
-        }
-
-        public float Min
-        {
-            get
-            {
-                return Mathf.Min(Alignment, Cohesion, Separation);
-            }
-        }
+        public FlockInfluence Alignment { get; }
+        public FlockInfluence Cohesion { get; }
+        public FlockInfluence Separation { get; }
     }
 }
