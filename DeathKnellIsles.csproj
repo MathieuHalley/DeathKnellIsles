@@ -74,17 +74,16 @@
     <Reference Include="UnityEngine.HoloLens">
       <HintPath>Library\UnityAssemblies\UnityEngine.HoloLens.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEditor.iOS.Extensions.Xcode">
-      <HintPath>Library\UnityAssemblies\UnityEditor.iOS.Extensions.Xcode.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEditor.iOS.Extensions.Common">
-      <HintPath>Library\UnityAssemblies\UnityEditor.iOS.Extensions.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil">
-      <HintPath>Library\UnityAssemblies\Mono.Cecil.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\Entity\entity.cs" />
+    <Compile Include="Assets\Scripts\Entity\livingEntity.cs" />
+    <Compile Include="Assets\Scripts\Entity\undeadEntity.cs" />
+    <Compile Include="Assets\Scripts\Entity\villagerEntity.cs" />
+    <Compile Include="Assets\Scripts\eventHandlers\entityEvents.cs" />
+    <Compile Include="Assets\Scripts\eventHandlers\livingEventsHandler.cs" />
+    <Compile Include="Assets\Scripts\eventHandlers\undeadEventHandler.cs" />
+    <Compile Include="Assets\Scripts\eventHandlers\villagerEventHandler.cs" />
     <Compile Include="Assets\Scripts\EventTest.cs" />
     <Compile Include="Assets\Scripts\FlockBoid.cs" />
     <Compile Include="Assets\Scripts\FlockCoordinator.cs" />
