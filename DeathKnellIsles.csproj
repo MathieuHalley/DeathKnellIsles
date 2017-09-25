@@ -85,10 +85,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\EventTest.cs" />
-    <Compile Include="Assets\Scripts\FlockBoid.cs" />
-    <Compile Include="Assets\Scripts\FlockCoordinator.cs" />
-    <Compile Include="Assets\Scripts\IFlockBoid.cs" />
+    <Compile Include="Assets\Scripts\Events\BellEvents.cs" />
+    <Compile Include="Assets\Scripts\Events\EventManager.cs" />
+    <Compile Include="Assets\Scripts\Events\EventTest.cs" />
+    <Compile Include="Assets\Scripts\Events\GameEventsBase.cs" />
+    <Compile Include="Assets\Scripts\Events\PanelEventTest.cs" />
+    <Compile Include="Assets\Scripts\Events\PauseEvents.cs" />
+    <Compile Include="Assets\Scripts\Events\PlayEvents.cs" />
+    <Compile Include="Assets\Scripts\Flocking\FlockBoid.cs" />
+    <Compile Include="Assets\Scripts\Flocking\FlockCoordinator.cs" />
+    <Compile Include="Assets\Scripts\Flocking\IFlockBoid.cs" />
     <Compile Include="Assets\Scripts\Misc\DontDestroyOnLoad.cs" />
     <Compile Include="Assets\Scripts\Misc\EnumExtension.cs" />
     <Compile Include="Assets\Scripts\Misc\EnumFlagsAttribute.cs" />
@@ -96,6 +102,7 @@
     <Compile Include="Assets\Scripts\Misc\ExtendedMonoBehaviour.cs" />
     <Compile Include="Assets\Scripts\Misc\Extension.cs" />
     <Compile Include="Assets\Scripts\Misc\ScaledTime.cs" />
+    <Compile Include="Assets\Scripts\Misc\Util.cs" />
     <Compile Include="Assets\Scripts\Obsolete\IInfluenceFlowCoordinator.cs" />
     <Compile Include="Assets\Scripts\Obsolete\IInfluenceNode.cs" />
     <Compile Include="Assets\Scripts\Obsolete\IInfluenceSourceNode.cs" />
@@ -116,8 +123,6 @@
     <Compile Include="Assets\Scripts\Obsolete\NodeInfluenceTest.cs" />
     <Compile Include="Assets\Scripts\Obsolete\NodeNeighbourManager.cs" />
     <Compile Include="Assets\Scripts\Obsolete\SelectiveInfluenceNode.cs" />
-    <Compile Include="Assets\Scripts\PanelEventTest.cs" />
-    <Compile Include="Assets\Scripts\Util.cs" />
     <Compile Include="Assets\UI\UIScripts\Exit.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
