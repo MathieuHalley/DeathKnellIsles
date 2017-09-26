@@ -2,6 +2,8 @@
 
 namespace Game.Events
 {
+    //  Bell event handler interfaces
+
     public interface IBellEventHandler : IGameEventHandler
     {
         void OnBellEvent(BellEventData data);
@@ -17,11 +19,18 @@ namespace Game.Events
         void OnBellStopEvent(BellEventData data);
     }
 
-    [Serializable] public class BellEvent : GameEvent<BellEventData> { }
+    //  Bell event classes
 
-    [Serializable] public class BellStartEvent : GameEvent<BellEventData> { }
+    [Serializable] public sealed class BellEvent : GameEvent<BellEventData> { }
 
-    [Serializable] public class BellStopEvent : GameEvent<BellEventData> { }
+    [Serializable] public sealed class BellStartEvent : GameEvent<BellEventData> { }
+
+    [Serializable] public sealed class BellStopEvent : GameEvent<BellEventData> { }
+
+    /// <summary>
+    ///     Inherits from <see cref="GameEventData"/>. 
+    ///     Provides general event utility data and data relevant to any Bell events.
+    /// </summary>
 
     [Serializable] public class BellEventData : GameEventData { }
 }
