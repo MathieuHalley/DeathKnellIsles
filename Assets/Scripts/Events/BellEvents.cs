@@ -21,16 +21,20 @@ namespace Game.Events
 
     //  Bell event classes
 
-    [Serializable] public sealed class BellEvent : GameEvent<BellEventData> { }
+    [Serializable]
+    public sealed class BellEvent : GameEvent<BellEventData> { }
 
-    [Serializable] public sealed class BellStartEvent : GameEvent<BellEventData> { }
+    [Serializable]
+    public sealed class BellStartEvent : GameEvent<BellEventData> { }
 
-    [Serializable] public sealed class BellStopEvent : GameEvent<BellEventData> { }
+    [Serializable]
+    public sealed class BellStopEvent : GameEvent<BellEventData> { }
 
     /// <summary>
     ///     Inherits from <see cref="GameEventData"/>. 
     ///     Provides general event utility data and data relevant to any Bell events.
     /// </summary>
 
-    [Serializable] public class BellEventData : GameEventData { }
+    [Serializable]
+    public class BellEventData : GameEventData { }
 }

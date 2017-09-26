@@ -21,16 +21,20 @@ namespace Game.Events
 
     //  Play event classes
 
-    [Serializable] public sealed class PlayEvent : GameEvent<PlayEventData> { }
+    [Serializable]
+    public sealed class PlayEvent : GameEvent<PlayEventData> { }
 
-    [Serializable] public sealed class PlayStartEvent : GameEvent<PlayEventData> { }
+    [Serializable]
+    public sealed class PlayStartEvent : GameEvent<PlayEventData> { }
 
-    [Serializable] public sealed class PlayStopEvent : GameEvent<PlayEventData> { }
+    [Serializable]
+    public sealed class PlayStopEvent : GameEvent<PlayEventData> { }
 
     /// <summary>
     ///     Inherits from <see cref="GameEventData"/>. 
     ///     Provides general event utility data and data relevant to any play events.
     /// </summary>
 
-    [Serializable] public class PlayEventData : GameEventData { }
+    [Serializable]
+    public class PlayEventData : GameEventData { }
 }

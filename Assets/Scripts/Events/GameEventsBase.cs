@@ -30,8 +30,9 @@ namespace Game.Events
     /// The <see cref="GameEventData"/> type used by this <see cref="GameEvent{T}"/>.
     /// </typeparam>
 
-    [Serializable] public abstract class GameEvent<T> : UnityEvent<T> 
-        where T : GameEventData { }
+    [Serializable]
+    public abstract class GameEvent<T> : UnityEvent<T> where T : GameEventData
+    { }
 
 
     /// <summary>
@@ -41,7 +42,8 @@ namespace Game.Events
     ///     It's important that any inheriting class has the Serializable attribute.
     /// </summary>
 
-    [Serializable] public class GameEventData
+    [Serializable]
+    public class GameEventData
     {
         public static uint EventID { get; private set; }
         public TimeSpan EventTime { get; private set; }
