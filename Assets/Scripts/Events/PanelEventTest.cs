@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
+/// <summary>A test MonoBehaviour class that experiments with Unity's UI EventSystems.</summary>
 public class PanelEventTest : MonoBehaviour, IPointerClickHandler, ISelectHandler, IDragHandler
 {
     public void OnPointerClick(PointerEventData eventData)
