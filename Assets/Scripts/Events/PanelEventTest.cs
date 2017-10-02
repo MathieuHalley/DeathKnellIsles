@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
-
+using Game.Events;
 /// <summary>A test MonoBehaviour class that experiments with Unity's UI EventSystems.</summary>
 public class PanelEventTest : MonoBehaviour, IPointerClickHandler, ISelectHandler, IDragHandler
 {
