@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Game.Events;
+using System;
 
-public abstract class entity : MonoBehaviour {
+public abstract class entity : MonoBehaviour, IGameEventHandler {
 
     //TODO reference to entity events once we establish how this is to be implemented
 
@@ -21,6 +22,16 @@ public abstract class entity : MonoBehaviour {
     //probably we will need a switch here to change states. Possibly there is a better way to implement?
     protected bool isAttacking;
 
+    protected float timeSinceLastAttacked = 0;
+    public EventManager EventManager
+    {
+        get
+        {
+            ///TODO return useful thing
+            throw new NotImplementedException();
+        }
+    }
+
     abstract public void move();
 
     //attack will select a target and send them the event to take damage. 
@@ -28,12 +39,6 @@ public abstract class entity : MonoBehaviour {
     //specific behavior provided by sub-classes
     abstract public void attack();
 
-    // Use this for initialization
-    void Start()
-    {
-        currentHealth = totalHealth;
-        currentMoveSpeed = maximumMovementSpeed;
-    }
 
     //function which can be caled to cause this entity to takedamage
     //TODO likely this will need to be in our event system

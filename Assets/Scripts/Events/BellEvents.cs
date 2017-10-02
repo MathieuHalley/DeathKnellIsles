@@ -1,9 +1,8 @@
 ﻿using System;
-
+using Bells;
 namespace Game.Events
 {
     //  Bell event handler interfaces
-
     public interface IBellEventHandler : IGameEventHandler
     {
         void OnBellEvent(BellEventData data);
@@ -36,5 +35,9 @@ namespace Game.Events
     /// </summary>
 
     [Serializable]
-    public class BellEventData : GameEventData { }
+    public class BellEventData : GameEventData
+    {
+        public bool isMajor;
+        public BellType typeOfBellCausingEvent;
+    }
 }

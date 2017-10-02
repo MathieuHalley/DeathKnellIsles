@@ -12,25 +12,48 @@ public class villagerEntity : entity {
 
     public override void attack()
     {
-        //check fo rpotential attack targets in range. Targets may include buildinns
-        //attack closest one if any
-        Collider[] hitTargets = Physics.OverlapSphere(this.transform.position, attackRange);
-
-        Collider closest = new Collider();
-        float distance = Mathf.Infinity;
-        foreach (Collider hit in hitTargets)
+        if (timeSinceLastAttacked == 0)
         {
-            float currentDistance = (this.transform.position - hit.transform.position).sqrMagnitude;
-            if (currentDistance < distance)
+            //check fo rpotential attack targets in range. Targets may include buildinns
+            //attack closest one if any
+            int mask = (1 << LayerMask.NameToLayer("living") ) | (1 << LayerMask.NameToLayer("livingClimber") ) | (1 << LayerMask.NameToLayer("livingFlying") );
+            Collider[] hitTargets = Physics.OverlapSphere(this.transform.position, attackRange, mask);
+
+            if (hitTargets.Length == 0)
             {
-                distance = currentDistance;
-                closest = hit;
+                print("Stopping attack");
+                isAttacking = false;
+                timeSinceLastAttacked = 0;
+                return;
             }
+
+            Collider closest = new Collider();
+            float distance = Mathf.Infinity;
+            foreach (Collider hit in hitTargets)
+            {
+                float currentDistance = (this.transform.position - hit.transform.position).sqrMagnitude;
+                if (currentDistance < distance)
+                {
+                    distance = currentDistance;
+                    closest = hit;
+                }
+            }
+
+            //replace this static function with our event system calls
+            //send event to the selected entity to take damage
+            print("attacking an entity " + closest.transform.name);
         }
 
-        //replace this static function with our event system calls
-        //send event to the selected entity to take damage
-        print("attacking an entity " + closest.transform.name);
+        timeSinceLastAttacked += Time.deltaTime;
+        if (timeSinceLastAttacked >= attackSpeed)
+            timeSinceLastAttacked = 0;
+    }
+
+    // Use this for initialization
+    void Start()
+    {
+        currentHealth = totalHealth;
+        currentMoveSpeed = maximumMovementSpeed;
     }
 
     // Update is called once per frame
