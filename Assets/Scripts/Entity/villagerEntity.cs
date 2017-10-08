@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class villagerEntity : entity {
 
@@ -42,6 +43,7 @@ public class villagerEntity : entity {
             //replace this static function with our event system calls
             //send event to the selected entity to take damage
             print("attacking an entity " + closest.transform.name);
+            ExecuteEvents.Execute<entity>(closest.gameObject, null, (x, y) => x.takeDamage(attackDamage));
         }
 
         timeSinceLastAttacked += Time.deltaTime;

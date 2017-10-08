@@ -1,10 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using Game.Events;
 using System;
 
-public abstract class entity : MonoBehaviour, IGameEventHandler {
+public abstract class entity : MonoBehaviour, IGameEventHandler, IEventSystemHandler  {
 
     //TODO reference to entity events once we establish how this is to be implemented
 
@@ -48,6 +49,7 @@ public abstract class entity : MonoBehaviour, IGameEventHandler {
         if(currentHealth <= 0)
         {
             //TODO play animation, die etc.
+            Destroy(this.gameObject);
         }
     }
 }

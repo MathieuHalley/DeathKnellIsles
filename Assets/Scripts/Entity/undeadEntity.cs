@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class undeadEntity : entity {
 
@@ -10,7 +11,7 @@ public class undeadEntity : entity {
         /// most liekly we will need to stop moving if attacking etc.
         /// 
                 //for this test project we will move towards "attack target" until we are in attack range
-        GameObject target = GameObject.Find("AttackTarget");
+        GameObject target = GameObject.Find("villager");
         Vector3 direction = (target.transform.position - this.transform.position).normalized;
         direction *= currentMoveSpeed;
         this.transform.Translate(direction * Time.deltaTime);
@@ -66,6 +67,7 @@ public class undeadEntity : entity {
             //replace this static function with our event system calls
             //send event to the selected entity to take damage
             print("attacking an entity " + closest.transform.name);
+            ExecuteEvents.Execute<entity>(closest.gameObject, null, (x, y) => x.takeDamage( attackDamage ));
         }
 
         timeSinceLastAttacked += Time.deltaTime;
