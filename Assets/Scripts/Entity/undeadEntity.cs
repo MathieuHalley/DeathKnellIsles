@@ -1,57 +1,47 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class undeadEntity : entity {
 
-    public override void move()
-    {
-        ///TODO depends how we are doing movement here, do we have a navmesh etc. 
-        /// most liekly we will need to stop moving if attacking etc.
-        /// 
-                //for this test project we will move towards "attack target" until we are in attack range
-        GameObject target = GameObject.Find("villager");
-        Vector3 direction = (target.transform.position - this.transform.position).normalized;
-        direction *= currentMoveSpeed;
-        this.transform.Translate(direction * Time.deltaTime);
-
-        if ((target.transform.position - this.transform.position).sqrMagnitude <= (attackRange * attackRange))
-        {
-            isAttacking = true;
-        }
-        else if (isAttacking == true)
-        {
-            isAttacking = false;
-        }
-    }
+    //will require knowledge of the tower if we ever need to retret to it
+    GameObject referenceToTower;
+    
 
     // Use this for initialization
     void Start()
     {
+        referenceToTower = GameObject.FindGameObjectWithTag("Tower");
+        if (referenceToTower == null)
+        {
+            Debug.Log("An undead entity has failed to find the tower object. Check your scene setup to enusre a toer exists and is tagged \"Tower\"");
+        }
+
+        navigationAgent = GetComponent<UnityEngine.AI.NavMeshAgent>();
+        if (navigationAgent == null)
+        {
+            Debug.Log("The undead entity did not have a navmesh agent. Please check prefab connection");
+        }
         currentHealth = totalHealth;
-        currentMoveSpeed = maximumMovementSpeed;
+        currentMoveSpeed = navigationAgent.speed;
+
+        
+
     }
 
-    public override void attack()
+    public override GameObject checkForEnemies()
     {
-        if (timeSinceLastAttacked == 0)
+        //set up our layer mask to only hit enemies that are acceptable to hit
+        int mask = (1 << LayerMask.NameToLayer("living")) | (1 << LayerMask.NameToLayer("livingClimber")) | (1 << LayerMask.NameToLayer("livingFlying")) | (1 << LayerMask.NameToLayer("Villager"));
+        Collider[] hitTargets = Physics.OverlapSphere(this.transform.position, perceptionRange, mask);
+        if(hitTargets.Length == 0)
         {
-            //check fo rpotential attack targets in range. Targets may include buildinns
-            //attack closest one if any
-
-            //need to correclty set up masks here so that we can not attack friendly types
-            int mask = (1 << LayerMask.NameToLayer("living")) | (1 << LayerMask.NameToLayer("livingClimber")) | (1 <<LayerMask.NameToLayer("livingFlying"));
-            Collider[] hitTargets = Physics.OverlapSphere(this.transform.position, attackRange, mask);
-
-            if (hitTargets.Length == 0)
-            {
-                print("Stopping attack");
-                isAttacking = false;
-                timeSinceLastAttacked = 0;
-                return;
-            }
-
+            return null;
+        }
+        else
+        {
             Collider closest = new Collider();
             float distance = Mathf.Infinity;
             foreach (Collider hit in hitTargets)
@@ -63,28 +53,47 @@ public class undeadEntity : entity {
                     closest = hit;
                 }
             }
-
-            //replace this static function with our event system calls
-            //send event to the selected entity to take damage
-            print("attacking an entity " + closest.transform.name);
-            ExecuteEvents.Execute<entity>(closest.gameObject, null, (x, y) => x.takeDamage( attackDamage ));
+            return closest.gameObject;
         }
-
-        timeSinceLastAttacked += Time.deltaTime;
-        if (timeSinceLastAttacked >= attackSpeed)
-            timeSinceLastAttacked = 0;
     }
 
     // Update is called once per frame
     void Update()
     {
-
-        ///TODO determine when to begin attacking, preferably without always checking radius all the time
-        if (isAttacking)
+        GameObject enemyIfFound = checkForEnemies();
+        if(enemyIfFound != null)
         {
-            attack();
+            currentState = EntityStates.attacking;
+            if (timeSinceLastAttacked >= attackSpeed)
+                timeSinceLastAttacked = 0;
+
         }
-        else
-            move();
+        else if(currentState == EntityStates.attacking)
+        {
+            currentState = EntityStates.idle;
+            //possibly not ideal, we would be allowed to attack again almost as soon we kill en enemy
+            timeSinceLastAttacked = 0;
+        }
+        switch(currentState)
+        {
+            case EntityStates.attacking:
+                {
+                    attack(enemyIfFound);
+                    break;
+                }
+            case EntityStates.retreating:
+                {
+                    if (navigationAgent.destination != referenceToTower.transform.position)
+                    {
+                        navigationAgent.destination = referenceToTower.transform.position;
+                    }
+                    break;
+                }
+            default:
+                {
+                    //both dead and idle states do nothing for undead
+                    break;
+                }
+        }
     }
 }

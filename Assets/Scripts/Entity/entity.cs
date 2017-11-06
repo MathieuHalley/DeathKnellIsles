@@ -7,14 +7,23 @@ using System;
 
 public abstract class entity : MonoBehaviour, IGameEventHandler, IEventSystemHandler  {
 
+    public enum EntityStates
+    {
+        attacking = 0,
+        retreating,
+        dead,
+        idle
+        ///Others as needed for bell effects
+    }
+
     //TODO reference to entity events once we establish how this is to be implemented
 
     public float totalHealth;
-    public float maximumMovementSpeed;
     public float attackDamage;
     public float attackSpeed;
     //we can make melee units using a small attack range, (or maybe even 0). Also gives us the flexibitity to tweak enemies to stand futher away if they have bigger weapons
     public float attackRange;
+    public float perceptionRange;
 
     //our actual current health value without losing track of the total health we started with
     protected float currentHealth;
@@ -24,6 +33,11 @@ public abstract class entity : MonoBehaviour, IGameEventHandler, IEventSystemHan
     protected bool isAttacking;
 
     protected float timeSinceLastAttacked = 0;
+
+    protected EntityStates currentState = EntityStates.idle;
+
+    protected UnityEngine.AI.NavMeshAgent navigationAgent;
+
     public EventManager EventManager
     {
         get
@@ -33,13 +47,34 @@ public abstract class entity : MonoBehaviour, IGameEventHandler, IEventSystemHan
         }
     }
 
-    abstract public void move();
-
     //attack will select a target and send them the event to take damage. 
     //most likely will be check if anything is in range, send damage event and play animation
     //specific behavior provided by sub-classes
-    abstract public void attack();
+    public void attack(GameObject target)
+    {
+        if(navigationAgent.destination != target.transform.position)
+        {
+            navigationAgent.destination = target.transform.position;
+        }
 
+        float distance = (this.transform.position - target.transform.position).magnitude;
+        if (timeSinceLastAttacked == 0 && distance <= attackRange)
+        {
+
+            //replace this static function with our event system calls
+            //send event to the selected entity to take damage
+            print("attacking an entity " + target.transform.name);
+            ExecuteEvents.Execute<entity>(target.gameObject, null, (x, y) => x.takeDamage(attackDamage));
+        }
+
+        timeSinceLastAttacked += Time.deltaTime;
+    }
+
+    //Use appropriate logic to find targets that this particular entity would consider an enemy unit.
+    //This entity can then choose to attack / flee whatever seems appropriate
+    //It is intended that this function will return a reference to the closest enemy. If any are found
+    //If none are found this function may return a null object
+    abstract public GameObject checkForEnemies();
 
     //function which can be caled to cause this entity to takedamage
     //TODO likely this will need to be in our event system
