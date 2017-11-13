@@ -7,7 +7,6 @@ using static entity;
 
 public class livingEntity : entity {
 
-    GameObject referenceToTower;
     GameObject referenceToDocks;
 
     public override GameObject checkForEnemies()
@@ -18,6 +17,7 @@ public class livingEntity : entity {
 
         if (hitTargets.Length == 0)
         {
+            print("targets is zero");
             return null;
         }
         else
@@ -35,6 +35,7 @@ public class livingEntity : entity {
             }
             return closest.gameObject;
         }
+        return null;
     }
 
     // Use this for initialization
@@ -43,13 +44,13 @@ public class livingEntity : entity {
         referenceToTower = GameObject.FindGameObjectWithTag("Tower");
         if (referenceToTower == null)
         {
-            Debug.Log("An undead entity has failed to find the tower object. Check your scene setup to enusre a toer exists and is tagged \"Tower\"");
+            Debug.Log("A living entity has failed to find the tower object. Check your scene setup to enusre a toer exists and is tagged \"Tower\"");
         }
 
         navigationAgent = GetComponent<UnityEngine.AI.NavMeshAgent>();
         if (navigationAgent == null)
         {
-            Debug.Log("The undead entity did not have a navmesh agent. Please check prefab connection");
+            Debug.Log("The living entity did not have a navmesh agent. Please check prefab connection");
         }
 
         referenceToDocks = GameObject.FindGameObjectWithTag("Docks");
@@ -74,6 +75,7 @@ public class livingEntity : entity {
         }
         else if (currentState == EntityStates.attacking)
         {
+            print("setting back to idle");
             currentState = EntityStates.idle;
             //possibly not ideal, we would be allowed to attack again almost as soon we kill en enemy
             timeSinceLastAttacked = 0;

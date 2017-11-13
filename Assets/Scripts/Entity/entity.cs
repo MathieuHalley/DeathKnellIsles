@@ -12,7 +12,8 @@ public abstract class entity : MonoBehaviour, IGameEventHandler, IEventSystemHan
         attacking = 0,
         retreating,
         dead,
-        idle
+        idle,
+        defending //of an object IE villagers that must defend a house
         ///Others as needed for bell effects
     }
 
@@ -37,6 +38,9 @@ public abstract class entity : MonoBehaviour, IGameEventHandler, IEventSystemHan
     protected EntityStates currentState = EntityStates.idle;
 
     protected UnityEngine.AI.NavMeshAgent navigationAgent;
+
+    //will require knowledge of the tower if we ever need to retret to it
+    protected GameObject referenceToTower;
 
     public EventManager EventManager
     {

@@ -6,10 +6,6 @@ using UnityEngine.EventSystems;
 
 public class undeadEntity : entity {
 
-    //will require knowledge of the tower if we ever need to retret to it
-    GameObject referenceToTower;
-    
-
     // Use this for initialization
     void Start()
     {
@@ -55,6 +51,7 @@ public class undeadEntity : entity {
             }
             return closest.gameObject;
         }
+        return null;
     }
 
     // Update is called once per frame
