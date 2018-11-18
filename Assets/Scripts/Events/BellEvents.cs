@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Game.Events
+namespace Assets.Scripts.Events
 {
-    //  Bell event handler interfaces
+//  Bell event handler interfaces
 
     public interface IBellEventHandler : IGameEventHandler
     {
@@ -19,7 +19,7 @@ namespace Game.Events
         void OnBellStopEvent(BellEventData data);
     }
 
-    //  Bell event classes
+//  Bell event classes
 
     [Serializable]
     public sealed class BellEvent : GameEvent<BellEventData> { }
@@ -31,7 +31,7 @@ namespace Game.Events
     public sealed class BellStopEvent : GameEvent<BellEventData> { }
 
     /// <summary>
-    ///     Inherits from <see cref="GameEventData"/>. 
+    ///     Inherits from <see cref="GameEventData"/>.
     ///     Provides general event utility data and data relevant to any Bell events.
     /// </summary>
 

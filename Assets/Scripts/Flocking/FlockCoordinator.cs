@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Assets.Scripts.Misc;
 
-namespace Assets.Scripts
+namespace Assets.Scripts.Flocking
 {
     public interface IFlockCollection
     {
@@ -33,9 +34,10 @@ namespace Assets.Scripts
     {
         public HashSet<HashSet<IFlockBoid>> Flocks { get; } = new HashSet<HashSet<IFlockBoid>>();
 
-        public HashSet<IFlockBoid> Boids => Flocks.SelectMany(flock => flock)
-                                                  .DistinctBy(boid => new { boid.Position, boid.Velocity })
-                                                  .ToHashSet();
+        public HashSet<IFlockBoid> Boids
+            => Flocks.SelectMany(flock => flock)
+                .DistinctBy(boid => new { boid.Position, boid.Velocity })
+                .ToHashSet();
 
         public IFlockCollection AddBoid(HashSet<IFlockBoid> flock, IFlockBoid boid)
         {
@@ -112,9 +114,10 @@ namespace Assets.Scripts
 
         public IFlockCollection RemoveBoids(IEnumerable<IFlockBoid> boids)
         {
+            var flockBoids = boids as IFlockBoid[] ?? boids.ToArray();
             foreach (var flock in Flocks)
             {
-                foreach (var boid in boids)
+                foreach (var boid in flockBoids)
                 {
                     if (flock.Contains(boid))
                     {

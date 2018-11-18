@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
 
-namespace Assets.Scripts
+namespace Assets.Scripts.Misc
 {
-	public class DontDestroyOnLoad : MonoBehaviour
-	{
-		void Awake ()
-		{
-			DontDestroyOnLoad(gameObject);
-		}
-	}
+    public class DontDestroyOnLoad : MonoBehaviour
+    {
+        void Awake()
+        {
+            DontDestroyOnLoad(gameObject);
+        }
+    }
 }

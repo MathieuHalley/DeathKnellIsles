@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Assets.Scripts
+namespace Assets.Scripts.Misc
 {
     public static class Util
     {
         /// <summary>Returns distinct elements from a sequence by using a specified anonymous function to compare values.</summary>
         /// <typeparam name="TSource">The type of the elements of source.</typeparam>
+        /// <typeparam name="TKey">The type of the elements of source.</typeparam>
         /// <param name="source">The sequence to remove duplicate elements from.</param>
         /// <param name="keySelector">An anonymous function to compare values.</param>
         /// <returns>An IEnumerable&lt;T&gt; that contains distinct elements from the source sequence.</returns>
@@ -17,7 +18,7 @@ namespace Assets.Scripts
             //  elements are only added to the hashset if they haven't been encountered before
             foreach (var element in source)
             {
-                if (seenKeys.Add(keySelector(element)) == true)
+                if (seenKeys.Add(keySelector(element)))
                 {
                     yield return element;
                 }

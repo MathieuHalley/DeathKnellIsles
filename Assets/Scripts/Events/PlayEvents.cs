@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Game.Events
+namespace Assets.Scripts.Events
 {
-    //  Play event handler interfaces
+//  Play event handler interfaces
 
     public interface IPlayEventHandler : IGameEventHandler
     {
@@ -19,7 +19,7 @@ namespace Game.Events
         void OnPlayStopEvent(PlayEventData data);
     }
 
-    //  Play event classes
+//  Play event classes
 
     [Serializable]
     public sealed class PlayEvent : GameEvent<PlayEventData> { }
@@ -31,7 +31,7 @@ namespace Game.Events
     public sealed class PlayStopEvent : GameEvent<PlayEventData> { }
 
     /// <summary>
-    ///     Inherits from <see cref="GameEventData"/>. 
+    ///     Inherits from <see cref="GameEventData"/>.
     ///     Provides general event utility data and data relevant to any play events.
     /// </summary>
 

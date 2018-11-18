@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Game.Events
+namespace Assets.Scripts.Events
 {
-    //  Pause event handler interfaces
+//  Pause event handler interfaces
 
     public interface IPauseEventHandler : IGameEventHandler
     {
@@ -19,7 +19,7 @@ namespace Game.Events
         void OnPauseStopEvent(PauseEventData data);
     }
 
-    //  Pause event classes
+//  Pause event classes
 
     [Serializable]
     public sealed class PauseEvent : GameEvent<PauseEventData> { }
@@ -29,9 +29,9 @@ namespace Game.Events
 
     [Serializable]
     public sealed class PauseStopEvent : GameEvent<PauseEventData> { }
-    
+
     /// <summary>
-    ///     Inherits from <see cref="GameEventData"/>. 
+    ///     Inherits from <see cref="GameEventData"/>.
     ///     Provides general event utility data and data relevant to any pause events.
     /// </summary>
 

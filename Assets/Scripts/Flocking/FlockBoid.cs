@@ -2,7 +2,7 @@
 using System.Linq;
 using UnityEngine;
 
-namespace Assets.Scripts
+namespace Assets.Scripts.Flocking
 {
     public class FlockBoid : IFlockBoid
     {
@@ -47,7 +47,9 @@ namespace Assets.Scripts
             return Neighbours;
         }
 
-        /// <summary>Calculate the average velocity of the provided IFlockBoids relative to the velocity of this Boid.</summary>
+        /// <summary>
+        ///     Calculate the average velocity of the provided IFlockBoids relative to the velocity of this Boid.
+        /// </summary>
         /// <returns>A Vector3 that contains the average relative velocity of the provided IFlockBoids.</returns>
         internal Vector3 CalculateFlockAlignment(IEnumerable<IFlockBoid> neighbours)
         {
@@ -69,20 +71,23 @@ namespace Assets.Scripts
         {
             var cohesion = new Vector3();
 
-            foreach (var neighbour in neighbours)
+            var boids = neighbours as IFlockBoid[] ?? neighbours.ToArray();
+
+            foreach (var neighbour in boids)
             {
                 cohesion += neighbour.Position - Position;
             }
 
-            return cohesion / neighbours.Count();
+            return cohesion / boids.Length;
         }
 
         internal void CalculateInfluences()
         {
             var neighbours = IdentifyNeighbours(Neighbours, Influences.Alignment.Range);
-            var alignment = new FlockInfluence(CalculateFlockAlignment(neighbours), Influences.Alignment.Range, Influences.Alignment.Weight);
-            var cohesion = new FlockInfluence(CalculateFlockCohesion(neighbours), Influences.Cohesion.Range, Influences.Cohesion.Weight);
-            var separation = new FlockInfluence(CalculateFlockSeparation(neighbours), Influences.Separation.Range, Influences.Separation.Weight);
+            var flockBoids = neighbours as IFlockBoid[] ?? neighbours.ToArray();
+            var alignment = new FlockInfluence(CalculateFlockAlignment(flockBoids), Influences.Alignment.Range, Influences.Alignment.Weight);
+            var cohesion = new FlockInfluence(CalculateFlockCohesion(flockBoids), Influences.Cohesion.Range, Influences.Cohesion.Weight);
+            var separation = new FlockInfluence(CalculateFlockSeparation(flockBoids), Influences.Separation.Range, Influences.Separation.Weight);
 
             Influences = new FlockInfluences(alignment, cohesion, separation);
         }
@@ -101,13 +106,14 @@ namespace Assets.Scripts
         {
             var separation = new Vector3();
 
-            foreach (var neighbour in neighbours)
+            var boids = neighbours as IFlockBoid[] ?? neighbours.ToArray();
+            foreach (var neighbour in boids)
             {
                 var offset = Position - neighbour.Position;
                 separation += offset.normalized / offset.sqrMagnitude;
             }
 
-            separation /= neighbours.Count();
+            separation /= boids.Length;
             separation = (separation.normalized * MaxSpeed) - Velocity;
             separation = Vector3.ClampMagnitude(separation, MaxSpeed);
 
@@ -117,10 +123,10 @@ namespace Assets.Scripts
         internal IEnumerable<IFlockBoid> IdentifyNeighbours(IEnumerable<IFlockBoid> neighbourCandidates, float radius)
         {
             return from candidate in neighbourCandidates
-                   where candidate != this
-                   let candidateOffset = (candidate.Position - Position).sqrMagnitude
-                   where candidateOffset < radius
-                   select candidate;
+                where candidate != this
+                let candidateOffset = (candidate.Position - Position).sqrMagnitude
+                where candidateOffset < radius
+                select candidate;
         }
     }
 }
